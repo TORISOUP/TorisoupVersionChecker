@@ -21,6 +21,8 @@ namespace TORISOUP.VersionCheckers.Editor
         private static readonly Dictionary<string, ServerVersionInfo> _updatableDict =
             new Dictionary<string, ServerVersionInfo>();
 
+        private static VersionData[] _loadedVersionData;
+
         private static int _loadingCount;
         private static int _fetchedCount;
         private static int _failedCount;
@@ -53,8 +55,9 @@ namespace TORISOUP.VersionCheckers.Editor
                 // VersionDataをまとめて取得
                 var targetVersionData = FindAllVersionData();
 
+                _loadedVersionData = targetVersionData.SelectMany(x => x.Value).ToArray();
                 _failedCount = _loadingCount;
-                
+
                 // 対象URIごとにチェック開始
                 foreach (var kv in targetVersionData)
                 {
@@ -68,7 +71,7 @@ namespace TORISOUP.VersionCheckers.Editor
                     {
                         // リストに含まれていなかったら無視
                         if (!dic.TryGetValue(target.Name, out var latestVersionInfo)) continue;
-                        
+
                         _fetchedCount++;
                         _failedCount--;
                         // 差分があったらリストに追加する
@@ -255,6 +258,8 @@ namespace TORISOUP.VersionCheckers.Editor
 
         #region Window
 
+        private bool _openDebugPane;
+
         [MenuItem("TORISOUP/Version Checker/Open Window")]
         public static ToriVersionChecker OpenWindow()
         {
@@ -282,10 +287,33 @@ namespace TORISOUP.VersionCheckers.Editor
                 EditorGUILayout.LabelField("アップデートはありません。");
                 EditorGUILayout.LabelField("There are no updates available.");
                 EditorGUILayout.LabelField($"Fetched count: {_fetchedCount}, Failed count: {_failedCount}");
-                return;
             }
 
             EditorGUILayout.Space();
+
+            _openDebugPane = EditorGUILayout.Foldout(_openDebugPane, "Details...");
+
+            if (_openDebugPane)
+            {
+                EditorGUILayout.BeginVertical(GUI.skin.box);
+                {
+                    if (_loadedVersionData.Length != 0)
+                    {
+                        EditorGUILayout.LabelField($"Total VersionData files:{_loadedVersionData.Length}");
+
+                        foreach (var v in _loadedVersionData)
+                        {
+                            EditorGUILayout.LabelField($" - {v.Name}\t{v.CurrentVersion}");
+                        }
+                    }
+                }
+                EditorGUILayout.EndVertical();
+            }
+
+            if (_updatableDict.Count == 0)
+            {
+                return;
+            }
 
             foreach (var kv in _updatableDict)
             {
@@ -305,9 +333,8 @@ namespace TORISOUP.VersionCheckers.Editor
 
                 EditorGUILayout.EndVertical();
             }
-            
-            EditorGUILayout.LabelField($"Fetched count: {_fetchedCount}, Failed count: {_failedCount}");
 
+            EditorGUILayout.LabelField($"Fetched count: {_fetchedCount}, Failed count: {_failedCount}");
         }
 
         #endregion
