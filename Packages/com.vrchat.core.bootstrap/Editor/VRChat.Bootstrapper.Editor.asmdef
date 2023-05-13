@@ -1,5 +1,5 @@
 {
-    "name": "ToriVersionChecker",
+    "name": "VRChat.Bootstrapper.Editor",
     "references": [],
     "includePlatforms": [
         "Editor"
@@ -8,7 +8,7 @@
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
-    "autoReferenced": false,
+    "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],
     "noEngineReferences": false

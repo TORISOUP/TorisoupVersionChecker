@@ -1,0 +1,14 @@
+{
+  "name": "jp.torisoup.versionchecker.Editor",
+  "references": [
+    "jp.torisoup.versionchecker"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "autoReferenced": true,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "defineConstraints": [],
+  "optionalUnityReferences": []
+}
