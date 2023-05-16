@@ -8,11 +8,11 @@ namespace TORISOUP.VersionCheckers.Editor
     [Serializable]
     public class VersionData : ScriptableObject
     {
-        [Header("プロダクト名")]
-        public string Name;
-        [Header("現在のバージョン情報")]
+        [Header("ID")]
+        public string Id;
+        [Header("このアセットの現在のバージョン情報")]
         public string CurrentVersion;
-        [Header("バージョン情報取得先URI")]
+        [Header("バージョン情報スプレッドシートのURI")]
         public string VersionCsvRepositoryUri;
     }
 }

@@ -70,14 +70,14 @@ namespace TORISOUP.VersionCheckers.Editor
                     foreach (var target in data)
                     {
                         // リストに含まれていなかったら無視
-                        if (!dic.TryGetValue(target.Name, out var latestVersionInfo)) continue;
+                        if (!dic.TryGetValue(target.Id, out var latestVersionInfo)) continue;
 
                         _fetchedCount++;
                         _failedCount--;
                         // 差分があったらリストに追加する
                         if (target.CurrentVersion != latestVersionInfo.Version)
                         {
-                            _updatableDict[target.Name] = latestVersionInfo;
+                            _updatableDict[target.Id] = latestVersionInfo;
                         }
                     }
                 }
@@ -164,9 +164,12 @@ namespace TORISOUP.VersionCheckers.Editor
 
             foreach (var values in lines)
             {
-                if (values.Length < 3) continue;
+                // 1行目相当は無視
+                if (values.Length > 0 && values[0] == "!ID!") continue;
+                if (values.Length < 4) continue;
                 result[values[0]] =
-                    new ServerVersionInfo(values[0], values[1], values[2], values.Length > 3 ? values[3] : null);
+                    new ServerVersionInfo(id: values[0], version: values[1], displayName: values[2],
+                        downloadUri: values[3], releaseNote: values.Length > 4 ? values[4] : null);
             }
 
 
@@ -291,50 +294,55 @@ namespace TORISOUP.VersionCheckers.Editor
 
             EditorGUILayout.Space();
 
-            _openDebugPane = EditorGUILayout.Foldout(_openDebugPane, "Details...");
+            if (_updatableDict.Count != 0)
+            {
+                EditorGUILayout.BeginVertical(GUI.skin.box);
 
+                foreach (var kv in _updatableDict)
+                {
+                    EditorGUILayout.BeginVertical(GUI.skin.box);
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.LabelField(kv.Value.DisplayName, EditorStyles.boldLabel);
+                    if (GUILayout.Button($"Update to {kv.Value.Version}"))
+                    {
+                        Application.OpenURL(kv.Value.DownloadUri);
+                    }
+                    GUILayout.FlexibleSpace();
+
+                    EditorGUILayout.EndHorizontal();
+                    if (!string.IsNullOrEmpty(kv.Value.ReleaseNote))
+                    {
+                        EditorGUILayout.LabelField(kv.Value.ReleaseNote, EditorStyles.helpBox);
+                    }
+
+                    EditorGUILayout.EndVertical();
+                }
+                EditorGUILayout.EndVertical();
+
+            }
+            
+            EditorGUILayout.Space(10);
+            
+            _openDebugPane = EditorGUILayout.Foldout(_openDebugPane, "Details...");
             if (_openDebugPane)
             {
+                EditorGUILayout.LabelField($"Fetched count: {_fetchedCount}, Failed count: {_failedCount}");
+
                 EditorGUILayout.BeginVertical(GUI.skin.box);
                 {
                     if (_loadedVersionData.Length != 0)
                     {
-                        EditorGUILayout.LabelField($"Total VersionData files:{_loadedVersionData.Length}");
+                        EditorGUILayout.LabelField($"VersionData files:{_loadedVersionData.Length}");
 
                         foreach (var v in _loadedVersionData)
                         {
-                            EditorGUILayout.LabelField($" - {v.Name}\t{v.CurrentVersion}");
+                            EditorGUILayout.LabelField($" - {v.Id}\t{v.CurrentVersion}");
                         }
                     }
                 }
                 EditorGUILayout.EndVertical();
             }
-
-            if (_updatableDict.Count == 0)
-            {
-                return;
-            }
-
-            foreach (var kv in _updatableDict)
-            {
-                EditorGUILayout.BeginVertical(GUI.skin.box);
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField(kv.Key, EditorStyles.boldLabel);
-                if (GUILayout.Button($"Update to {kv.Value.Version}"))
-                {
-                    Application.OpenURL(kv.Value.DownloadUri);
-                }
-
-                EditorGUILayout.EndHorizontal();
-                if (!string.IsNullOrEmpty(kv.Value.ReleaseNote))
-                {
-                    EditorGUILayout.LabelField(kv.Value.ReleaseNote, EditorStyles.helpBox);
-                }
-
-                EditorGUILayout.EndVertical();
-            }
-
-            EditorGUILayout.LabelField($"Fetched count: {_fetchedCount}, Failed count: {_failedCount}");
+            
         }
 
         #endregion
@@ -342,16 +350,18 @@ namespace TORISOUP.VersionCheckers.Editor
 
     internal readonly struct ServerVersionInfo : IEquatable<ServerVersionInfo>
     {
-        public string Name { get; }
+        public string Id { get; }
+        public string DisplayName { get; }
         public string Version { get; }
 
         public string DownloadUri { get; }
 
         public string ReleaseNote { get; }
 
-        public ServerVersionInfo(string name, string version, string downloadUri, string releaseNote)
+        public ServerVersionInfo(string id, string displayName, string version, string downloadUri, string releaseNote)
         {
-            Name = name;
+            Id = id;
+            DisplayName = displayName;
             Version = version;
             DownloadUri = downloadUri;
             ReleaseNote = releaseNote;
@@ -359,8 +369,8 @@ namespace TORISOUP.VersionCheckers.Editor
 
         public bool Equals(ServerVersionInfo other)
         {
-            return Name == other.Name && Version == other.Version && DownloadUri == other.DownloadUri &&
-                   ReleaseNote == other.ReleaseNote;
+            return Id == other.Id && DisplayName == other.DisplayName && Version == other.Version &&
+                   DownloadUri == other.DownloadUri && ReleaseNote == other.ReleaseNote;
         }
 
         public override bool Equals(object obj)
@@ -372,7 +382,8 @@ namespace TORISOUP.VersionCheckers.Editor
         {
             unchecked
             {
-                var hashCode = (Name != null ? Name.GetHashCode() : 0);
+                var hashCode = (Id != null ? Id.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (DisplayName != null ? DisplayName.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (Version != null ? Version.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (DownloadUri != null ? DownloadUri.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (ReleaseNote != null ? ReleaseNote.GetHashCode() : 0);
