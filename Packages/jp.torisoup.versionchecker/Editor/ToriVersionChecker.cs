@@ -287,20 +287,21 @@ namespace TORISOUP.VersionCheckers.Editor
 
             if (_updatableDict.Count == 0)
             {
-                EditorGUILayout.LabelField("アップデートはありません。");
-                EditorGUILayout.LabelField("There are no updates available.");
-                EditorGUILayout.LabelField($"Fetched count: {_fetchedCount}, Failed count: {_failedCount}");
+                EditorGUILayout.HelpBox($"アップデートはありません\nThere are no updates available.\nFetched count: {_fetchedCount}, Failed count: {_failedCount}", MessageType.Info);
             }
 
             EditorGUILayout.Space();
 
             if (_updatableDict.Count != 0)
             {
-                EditorGUILayout.BeginVertical(GUI.skin.box);
+                EditorGUILayout.HelpBox($"{_updatableDict.Count}件のアップデートが見つかりました", MessageType.Warning);
 
                 foreach (var kv in _updatableDict)
                 {
+                    var old = GUI.backgroundColor;
+                    GUI.backgroundColor = Color.cyan;
                     EditorGUILayout.BeginVertical(GUI.skin.box);
+                    GUI.backgroundColor = old;
                     EditorGUILayout.BeginHorizontal();
                     EditorGUILayout.LabelField(kv.Value.DisplayName, EditorStyles.boldLabel);
                     if (GUILayout.Button($"Update to {kv.Value.Version}"))
@@ -314,11 +315,9 @@ namespace TORISOUP.VersionCheckers.Editor
                     {
                         EditorGUILayout.LabelField(kv.Value.ReleaseNote, EditorStyles.helpBox);
                     }
-
                     EditorGUILayout.EndVertical();
                 }
                 EditorGUILayout.EndVertical();
-
             }
             
             EditorGUILayout.Space(10);
