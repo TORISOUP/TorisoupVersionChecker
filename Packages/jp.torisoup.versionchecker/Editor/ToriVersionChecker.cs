@@ -278,11 +278,12 @@ namespace TORISOUP.VersionCheckers.Editor
             }
 
             EditorGUILayout.BeginHorizontal();
-            if (GUILayout.Button("Check Update"))
             {
-                _ = FetchUpdateAsync();
+                if (GUILayout.Button("Check Update"))
+                {
+                    _ = FetchUpdateAsync();
+                }
             }
-
             EditorGUILayout.EndHorizontal();
 
             if (_updatableDict.Count == 0)
@@ -301,23 +302,26 @@ namespace TORISOUP.VersionCheckers.Editor
                     var old = GUI.backgroundColor;
                     GUI.backgroundColor = Color.cyan;
                     EditorGUILayout.BeginVertical(GUI.skin.box);
-                    GUI.backgroundColor = old;
-                    EditorGUILayout.BeginHorizontal();
-                    EditorGUILayout.LabelField(kv.Value.DisplayName, EditorStyles.boldLabel);
-                    if (GUILayout.Button($"Update to {kv.Value.Version}"))
                     {
-                        Application.OpenURL(kv.Value.DownloadUri);
-                    }
-                    GUILayout.FlexibleSpace();
+                        GUI.backgroundColor = old;
+                        EditorGUILayout.BeginHorizontal();
+                        {
+                            EditorGUILayout.LabelField(kv.Value.DisplayName, EditorStyles.boldLabel);
+                            if (GUILayout.Button($"Update to {kv.Value.Version}"))
+                            {
+                                Application.OpenURL(kv.Value.DownloadUri);
+                            }
 
-                    EditorGUILayout.EndHorizontal();
-                    if (!string.IsNullOrEmpty(kv.Value.ReleaseNote))
-                    {
-                        EditorGUILayout.LabelField(kv.Value.ReleaseNote, EditorStyles.helpBox);
+                            GUILayout.FlexibleSpace();
+                        }
+                        EditorGUILayout.EndHorizontal();
+                        if (!string.IsNullOrEmpty(kv.Value.ReleaseNote))
+                        {
+                            EditorGUILayout.LabelField(kv.Value.ReleaseNote, EditorStyles.helpBox);
+                        }
                     }
                     EditorGUILayout.EndVertical();
                 }
-                EditorGUILayout.EndVertical();
             }
             
             EditorGUILayout.Space(10);
