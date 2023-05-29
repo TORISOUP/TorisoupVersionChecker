@@ -293,6 +293,12 @@ namespace TORISOUP.VersionCheckers.Editor
 
             EditorGUILayout.Space();
 
+            var style = new GUIStyle(GUI.skin.label)
+            {
+                wordWrap = true,
+                fontStyle = FontStyle.Bold
+            };
+
             if (_updatableDict.Count != 0)
             {
                 EditorGUILayout.HelpBox($"{_updatableDict.Count}件のアップデートが見つかりました", MessageType.Warning);
@@ -306,13 +312,13 @@ namespace TORISOUP.VersionCheckers.Editor
                         GUI.backgroundColor = old;
                         EditorGUILayout.BeginHorizontal();
                         {
-                            EditorGUILayout.LabelField(kv.Value.DisplayName, EditorStyles.boldLabel);
+                            
+                            EditorGUILayout.LabelField(kv.Value.DisplayName, style);
                             if (GUILayout.Button($"Update to {kv.Value.Version}"))
                             {
                                 Application.OpenURL(kv.Value.DownloadUri);
                             }
 
-                            GUILayout.FlexibleSpace();
                         }
                         EditorGUILayout.EndHorizontal();
                         if (!string.IsNullOrEmpty(kv.Value.ReleaseNote))
