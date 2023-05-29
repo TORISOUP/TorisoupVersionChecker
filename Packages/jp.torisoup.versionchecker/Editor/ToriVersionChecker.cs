@@ -266,7 +266,7 @@ namespace TORISOUP.VersionCheckers.Editor
         [MenuItem("TORISOUP/Version Checker/Open Window")]
         public static ToriVersionChecker OpenWindow()
         {
-            return GetWindow<ToriVersionChecker>("Version Checker 1.0");
+            return GetWindow<ToriVersionChecker>("Version Checker");
         }
 
         private void OnGUI()
