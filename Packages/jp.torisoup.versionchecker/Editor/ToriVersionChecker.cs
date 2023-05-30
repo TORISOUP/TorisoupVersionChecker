@@ -15,7 +15,7 @@ namespace TORISOUP.VersionCheckers.Editor
     {
         #region static
 
-        static readonly string TempFilePath = "Temp/ToriVersionCheckTemp";
+        static readonly string TempFilePath = "Temp/TorisoupVersionCheckerTemp";
 
 
         private static readonly Dictionary<string, ServerVersionInfo> _updatableDict =
@@ -27,7 +27,7 @@ namespace TORISOUP.VersionCheckers.Editor
         private static int _fetchedCount;
         private static int _failedCount;
 
-        public static bool IsLoading { get; private set; }
+        private static bool IsLoading { get; set; }
 
         static ToriVersionChecker()
         {
@@ -42,7 +42,6 @@ namespace TORISOUP.VersionCheckers.Editor
         {
             IsLoading = true;
             var httpClient = new HttpClient();
-
             try
             {
                 // リセット
@@ -288,7 +287,9 @@ namespace TORISOUP.VersionCheckers.Editor
 
             if (_updatableDict.Count == 0)
             {
-                EditorGUILayout.HelpBox($"アップデートはありません\nThere are no updates available.\nFetched count: {_fetchedCount}, Failed count: {_failedCount}", MessageType.Info);
+                EditorGUILayout.HelpBox(
+                    $"アップデートはありません\nThere are no updates available.\nFetched count: {_fetchedCount}, Failed count: {_failedCount}",
+                    MessageType.Info);
             }
 
             EditorGUILayout.Space();
@@ -312,13 +313,11 @@ namespace TORISOUP.VersionCheckers.Editor
                         GUI.backgroundColor = old;
                         EditorGUILayout.BeginHorizontal();
                         {
-                            
                             EditorGUILayout.LabelField(kv.Value.DisplayName, style);
                             if (GUILayout.Button($"Update to {kv.Value.Version}"))
                             {
                                 Application.OpenURL(kv.Value.DownloadUri);
                             }
-
                         }
                         EditorGUILayout.EndHorizontal();
                         if (!string.IsNullOrEmpty(kv.Value.ReleaseNote))
@@ -329,9 +328,9 @@ namespace TORISOUP.VersionCheckers.Editor
                     EditorGUILayout.EndVertical();
                 }
             }
-            
+
             EditorGUILayout.Space(10);
-            
+
             _openDebugPane = EditorGUILayout.Foldout(_openDebugPane, "Details...");
             if (_openDebugPane)
             {
@@ -351,7 +350,6 @@ namespace TORISOUP.VersionCheckers.Editor
                 }
                 EditorGUILayout.EndVertical();
             }
-            
         }
 
         #endregion
