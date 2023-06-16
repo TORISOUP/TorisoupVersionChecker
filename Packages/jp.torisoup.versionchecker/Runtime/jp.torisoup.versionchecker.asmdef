@@ -1,12 +1,17 @@
 {
-  "name": "jp.torisoup.versionchecker",
-  "references": [],
-  "includePlatforms": [],
-  "excludePlatforms": [],
-  "allowUnsafeCode": false,
-  "autoReferenced": true,
-  "overrideReferences": false,
-  "precompiledReferences": [],
-  "defineConstraints": [],
-  "optionalUnityReferences": []
+    "name": "jp.torisoup.versionchecker",
+    "references": [],
+    "includePlatforms": [
+        "Android",
+        "WindowsStandalone32",
+        "WindowsStandalone64"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
